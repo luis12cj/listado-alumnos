@@ -1,0 +1,182 @@
+<div class="layout-container">
+  <!-- Barra lateral izquierda -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <i class="bi bi-mortarboard-fill brand-icon"></i>
+      <span>UPIIZ-IPN</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active" href="javascript:void(0)">
+        <i class="bi bi-people-fill"></i>
+        <span>Alumnos</span>
+      </a>
+      <a class="nav-item" href="javascript:void(0)">
+        <i class="bi bi-book-fill"></i>
+        <span>Materias</span>
+      </a>
+      <a class="nav-item" href="javascript:void(0)">
+        <i class="bi bi-bar-chart-line-fill"></i>
+        <span>Reportes</span>
+      </a>
+      <a class="nav-item" href="javascript:void(0)">
+        <i class="bi bi-gear-fill"></i>
+        <span>Configuración</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="footer-badge">
+        <i class="bi bi-building"></i>
+        <span>UPIIZ</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Área derecha (Navbar + Contenido) -->
+  <div class="main-wrapper">
+    <!-- Barra superior -->
+    <header class="topbar">
+      <div class="user-profile">
+        <i class="bi bi-person-circle fs-5"></i>
+        <span>Profesor</span>
+        <i class="bi bi-chevron-down small"></i>
+      </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="content">
+      <!-- Encabezado y botón -->
+      <div class="page-header">
+        <h2 class="page-title">
+          <i class="bi bi-people-fill text-primary me-2"></i>Listado de alumnos
+        </h2>
+
+        <button class="btn btn-toggle-tabla" (click)="toggleTabla()">
+          <i class="bi" [class.bi-eye-slash-fill]="mostrarTabla" [class.bi-eye-fill]="!mostrarTabla"></i>
+          {{ mostrarTabla ? 'Ocultar Tabla' : 'Mostrar Tabla' }}
+        </button>
+      </div>
+
+      <!-- Filtros -->
+      <div class="filtros-box">
+        <div class="mb-3">
+          <label class="form-label fw-semibold small text-muted">Ingrese Nombre</label>
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control border-0 border-bottom rounded-0 shadow-none"
+              placeholder="Alumno a buscar"
+              [(ngModel)]="filtroNombre"
+            />
+            <span class="input-group-text bg-transparent border-0 border-bottom rounded-0">
+              <i class="bi bi-search text-muted"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold small text-muted">Ingrese Carrera</label>
+          <select
+            class="form-select border-0 border-bottom rounded-0 shadow-none"
+            [(ngModel)]="filtroCarrera"
+          >
+            @for (carrera of carreras; track $index) {
+              <option [value]="carrera">{{ carrera }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <!-- Tabla de alumnos -->
+      @if (mostrarTabla) {
+        <div class="table-responsive shadow-sm rounded-3 mb-4">
+          <table class="table table-hover align-middle mb-0 tabla-alumnos">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Matrícula</th>
+                <th>Nombre</th>
+                <th>Carrera</th>
+                <th class="text-center">Semestre</th>
+                <th class="text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (alumno of alumnosFiltrados; track alumno.id) {
+                <tr>
+                  <td class="fw-semibold">{{ alumno.id }}</td>
+                  <td>{{ alumno.matricula }}</td>
+                  <td>{{ alumno.nombre }}</td>
+                  <td>{{ alumno.carrera }}</td>
+                  <td class="text-center">{{ alumno.semestre }}</td>
+                  <td class="text-center">
+                    <span
+                      class="status-badge"
+                      [class.status-activo]="alumno.status === 'Activo'"
+                      [class.status-suspendido]="alumno.status === 'Suspendido'"
+                      [class.status-egresado]="alumno.status === 'Egresado'"
+                    >
+                      {{ alumno.status }}
+                    </span>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">
+                    No se encontraron alumnos con ese criterio de búsqueda.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- Sección Estadísticas -->
+      <section class="estadisticas-section">
+        <h4 class="stats-title">
+          <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Estadísticas
+        </h4>
+
+        <div class="row g-3 mt-1">
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-icon icon-total">
+                <i class="bi bi-people-fill"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Total alumnos:</span>
+                <span class="stat-value">{{ totalAlumnos }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-icon icon-activos">
+                <i class="bi bi-patch-check-fill"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Total activos:</span>
+                <span class="stat-value">{{ totalActivos }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="stat-card">
+              <div class="stat-icon icon-egresados">
+                <i class="bi bi-mortarboard-fill"></i>
+              </div>
+              <div class="stat-info">
+                <span class="stat-label">Total egresados:</span>
+                <span class="stat-value">{{ totalEgresados }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
